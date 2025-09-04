@@ -1,11 +1,10 @@
-import React from "react";
-import Products from "./components/Products";
+import React from 'react';
 
 function App() {
   return (
-    <div>
-      <h1>لیست محصولات شما اینجاست</h1>
-      <Products />
+    <div style={{ padding: '20px' }}>
+      <h1>سلام! پروژه React + Electron + Vite آماده است 😄</h1>
+      <p>این یک تست ساده است.</p>
     </div>
   );
 }

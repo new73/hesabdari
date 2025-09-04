@@ -1,31 +1,25 @@
-// db.js
-import sql from "mssql";
+// dal/db.js
+const sql = require('mssql');
 
-// تنظیمات اتصال به SQL Server
 const config = {
-  user: "sa",           // یوزری که داری
-  password: "123456", // پسوردت
-  server: "localhost",  // آدرس سرور
-  database: "SmartAccounting", // نام دیتابیس
+  user: 'sa',
+  password: 'your_password',
+  server: 'localhost',
+  database: 'YourDB',
   options: {
-    trustServerCertificate: true, // برای self-signed certificate
+    trustServerCertificate: true,
   },
 };
 
-// تابعی که داده‌ها رو از جدول Products می‌خونه
-export async function getProductsFromDB() {
-  try {
-    // اتصال به دیتابیس
-    let pool = await sql.connect(config);
+const poolPromise = new sql.ConnectionPool(config)
+  .connect()
+  .then(pool => pool)
+  .catch(err => console.log('DB Connection Error:', err));
 
-    // اجرای کوئری
-    let result = await pool.request().query("SELECT Id, ProductName, Price, Stock FROM Products");
-
-    return result.recordset; // آرایه‌ی محصولات
-  } catch (err) {
-    console.error("DB Error:", err);
-    return []; // در صورت خطا آرایه خالی برگردان
-  } finally {
-    await sql.close();
-  }
+function getProducts() {
+  return poolPromise.then(pool =>
+    pool.request().query('SELECT * FROM Products').then(result => result.recordset)
+  );
 }
+
+module.exports = { getProducts };
