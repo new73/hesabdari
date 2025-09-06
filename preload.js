@@ -1,7 +1,5 @@
-window.addEventListener('DOMContentLoaded', () => {
-  console.log("Preload loaded");
-});
+import { contextBridge, ipcRenderer } from 'electron';
 
-global.myAPI = {
-  greet: () => "سلام از Preload!"
-};
+contextBridge.exposeInMainWorld('api', {
+  getProducts: () => ipcRenderer.invoke('get-products')
+});

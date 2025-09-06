@@ -1,32 +1,36 @@
-import { app, BrowserWindow } from 'electron'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import { app, BrowserWindow, ipcMain } from 'electron';
+import path from 'path';
+import sql from 'mssql';
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const dbConfig = {
+  user: 'sa',
+  password: 'your_password',
+  server: 'localhost',
+  database: 'YourDB',
+  options: { encrypt: false, trustServerCertificate: true }
+};
 
-let mainWindow
+ipcMain.handle('get-products', async () => {
+  try {
+    await sql.connect(dbConfig);
+    const result = await sql.query('SELECT * FROM Products');
+    return result.recordset;
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+});
 
 const createWindow = () => {
-  mainWindow = new BrowserWindow({
+  const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-    },
-  })
+      preload: path.join(__dirname, 'preload.js')
+    }
+  });
 
-  if (process.env.NODE_ENV === 'development') {
-    // وقتی توی dev هستیم، از Vite Dev Server لود کن
-    mainWindow.loadURL('http://localhost:5173')
-  } else {
-    // وقتی build شده، فایل‌های dist رو لود کن
-    mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'))
-  }
-}
+  mainWindow.loadURL('http://localhost:5173');
+};
 
-app.whenReady().then(createWindow)
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit()
-})
+app.whenReady().then(createWindow);

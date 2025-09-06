@@ -1,0 +1,29 @@
+.sidebar {
+  width: 100%; /* اکنون 100% wrapper */
+  background: #2c3e50;
+  color: white;
+  padding: 20px;
+  text-align: right;
+  direction: rtl;
+}
+
+
+.sidebar h2 {
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  margin: 10px 0;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.sidebar li:hover {
+  color: #f1c40f;
+}
