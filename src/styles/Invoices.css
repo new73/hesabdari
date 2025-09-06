@@ -1,4 +1,4 @@
-/* src/styles/Products.css (Customers و Invoices مشابه) */
+/* src/styles/Invoices.css */
 .table-container {
   padding: 20px;
 }
@@ -6,18 +6,19 @@
 .table-container h2 {
   margin-bottom: 20px;
   color: #34495e;
+  text-align: right;
 }
 
 .table-container table {
   width: 100%;
   border-collapse: collapse;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  text-align: right; /* مهم: جدول راست‌چین */
+  text-align: right; /* مهم: راست‌چین */
 }
 
 .table-container th {
   padding: 10px;
-  background-color: #2980b9; /* برای Customers و Invoices می‌تونی رنگ‌ها متفاوت باشه */
+  background-color: #8e44ad;
   color: white;
 }
 

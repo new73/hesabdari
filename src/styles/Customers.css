@@ -6,13 +6,14 @@
 .table-container h2 {
   margin-bottom: 20px;
   color: #34495e;
+  text-align: right;
 }
 
 .table-container table {
   width: 100%;
   border-collapse: collapse;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  text-align: center;
+  text-align: right; /* مهم: راست‌چین */
 }
 
 .table-container th {

@@ -1,42 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import '../styles/Invoices.css';
 
 export default function Invoices() {
-  const [invoices, setInvoices] = useState([]);
-
-  useEffect(() => {
-    if (window.api?.getInvoices) {
-      window.api.getInvoices().then(data => setInvoices(data));
-    } else {
-      console.warn('window.api undefined: running in browser without Electron');
-      setInvoices([
-        { Id: 1, Customer: 'مشتری تست', Date: '2025-09-06', Total: 50000 }
-      ]);
-    }
-  }, []);
+  const invoices = [
+    { id: 1, customer: 'علی احمدی', total: 250000, date: '2025-09-01' },
+    { id: 2, customer: 'سارا رضایی', total: 450000, date: '2025-09-03' },
+    { id: 3, customer: 'محمد کریمی', total: 120000, date: '2025-09-05' },
+  ];
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h2 style={{ marginBottom: '20px', color: '#34495e' }}>لیست فاکتورها</h2>
-      <table style={{
-        width: '100%',
-        borderCollapse: 'collapse',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-      }}>
-        <thead style={{ backgroundColor: '#8e44ad', color: 'white' }}>
+    <div className="table-container">
+      <h2>فاکتورها</h2>
+      <table>
+        <thead>
           <tr>
-            <th style={{ padding: '10px' }}>ID</th>
-            <th style={{ padding: '10px' }}>مشتری</th>
-            <th style={{ padding: '10px' }}>تاریخ</th>
-            <th style={{ padding: '10px' }}>جمع کل</th>
+            <th>کد فاکتور</th>
+            <th>مشتری</th>
+            <th>مبلغ کل</th>
+            <th>تاریخ</th>
           </tr>
         </thead>
         <tbody>
           {invoices.map(inv => (
-            <tr key={inv.Id} style={{ borderBottom: '1px solid #ddd', textAlign: 'center' }}>
-              <td style={{ padding: '10px' }}>{inv.Id}</td>
-              <td style={{ padding: '10px' }}>{inv.Customer}</td>
-              <td style={{ padding: '10px' }}>{inv.Date}</td>
-              <td style={{ padding: '10px' }}>{inv.Total.toLocaleString()} تومان</td>
+            <tr key={inv.id}>
+              <td>{inv.id}</td>
+              <td>{inv.customer}</td>
+              <td>{inv.total.toLocaleString()} تومان</td>
+              <td>{inv.date}</td>
             </tr>
           ))}
         </tbody>
