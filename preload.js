@@ -1,4 +1,7 @@
-// این فایل قبل از لود شدن React اجرا میشه
-window.addEventListener("DOMContentLoaded", () => {
-  console.log("✅ Preload.js loaded");
+window.addEventListener('DOMContentLoaded', () => {
+  console.log("Preload loaded");
 });
+
+global.myAPI = {
+  greet: () => "سلام از Preload!"
+};

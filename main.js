@@ -1,23 +1,32 @@
-const { app, BrowserWindow } = require("electron");
-const path = require("path");
+import { app, BrowserWindow } from 'electron'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
-let mainWindow;
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
-function createWindow() {
+let mainWindow
+
+const createWindow = () => {
   mainWindow = new BrowserWindow({
-    width: 1000,
-    height: 700,
+    width: 800,
+    height: 600,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      preload: path.join(__dirname, 'preload.js'),
     },
-  });
+  })
 
-  if (process.env.NODE_ENV === "development") {
-    mainWindow.loadURL("http://localhost:5173");
-    mainWindow.webContents.openDevTools();
+  if (process.env.NODE_ENV === 'development') {
+    // وقتی توی dev هستیم، از Vite Dev Server لود کن
+    mainWindow.loadURL('http://localhost:5173')
   } else {
-    mainWindow.loadFile(path.join(__dirname, "dist", "index.html"));
+    // وقتی build شده، فایل‌های dist رو لود کن
+    mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'))
   }
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(createWindow)
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit()
+})
