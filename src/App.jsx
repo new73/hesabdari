@@ -1,28 +1,17 @@
-import React, { useState } from 'react';
-import Sidebar from './components/Sidebar';
-import Dashboard from './components/Dashboard';
-import Products from './components/Products';
-import Customers from './components/Customers';
-import Invoices from './components/Invoices';
-import './styles/App.css';
+import React, { useState } from "react";
+import Sidebar from "./components/Sidebar";
+import Dashboard from "./components/Dashboard";
+import Products from "./components/Products";
 
 export default function App() {
-  const [activePage, setActivePage] = useState('dashboard');
-
-  const renderPage = () => {
-    switch (activePage) {
-      case 'products': return <Products />;
-      case 'customers': return <Customers />;
-      case 'invoices': return <Invoices />;
-      default: return <Dashboard />;
-    }
-  };
+  const [activePage, setActivePage] = useState("dashboard");
 
   return (
-    <div className="app-container">
+    <div className="app-container" style={{ display: "flex", direction: "rtl", minHeight: "100vh" }}>
       <Sidebar setActivePage={setActivePage} />
-      <div className="main-content">
-        {renderPage()}
+      <div className="main-content" style={{ flex: 1, padding: "20px" }}>
+        {activePage === "dashboard" && <Dashboard />}
+        {activePage === "products" && <Products />}
       </div>
     </div>
   );

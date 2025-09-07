@@ -1,28 +1,18 @@
 // server/routes/customers.js
-import express from 'express';
-import sql from 'mssql';
+import express from "express";
+import { getPool } from "../db.js";
+
 const router = express.Router();
 
-
-const config = {
-  user: 'sa',            // SQL User
-  password: 'Qaz@Zaq_123',// رمز عبور
-  server: 'localhost',
-  database: 'SmartAccounting',
-  options: {
-    trustServerCertificate: true
-  }
-};
-
-// گرفتن تمام مشتریان
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    let pool = await sql.connect(config);
-    let result = await pool.request().query('SELECT * FROM Customers');
+    const pool = await getPool();
+    const result = await pool.request().query("SELECT * FROM Customers");
     res.json(result.recordset);
   } catch (err) {
-    res.status(500).send(err.message);
+    console.error("❌ Error fetching customers:", err.message);
+    res.status(500).send("Server error while fetching customers");
   }
 });
 
-export default router; // ← این خط خیلی مهمه
+export default router;
