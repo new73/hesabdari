@@ -1,78 +1,118 @@
-/* Products.css */
+/* src/components/styles/Products.css */
 
+/* صفحه محصولات */
 .products-page {
   padding: 20px;
-  direction: rtl; /* راست‌چین برای فارسی */
-  font-family: Tahoma, Arial, sans-serif;
-  background: #f5f6fa;
+  font-family: "Tahoma", sans-serif;
 }
 
-.products-page h2 {
+/* دکمه افزودن محصول */
+.products-page > button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.products-page > button:hover {
+  background-color: #45a049;
+}
+
+/* فرم افزودن محصول */
+form {
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
   margin-bottom: 20px;
-  color: #2c3e50;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+form input,
+form textarea {
+  width: 100%;
+  padding: 8px 10px;
+  margin: 5px 0 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+form textarea {
+  resize: vertical;
+}
+
+form button {
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+form button:hover {
+  background-color: #1976d2;
 }
 
 /* جدول محصولات */
 .products-table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
-  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  margin-top: 10px;
 }
 
 .products-table th,
 .products-table td {
-  padding: 12px 15px;
   border: 1px solid #ddd;
-  text-align: right; /* راست‌چین */
+  padding: 10px;
+  text-align: center;
 }
 
 .products-table th {
-  background-color: #2c3e50;
-  color: white;
+  background-color: #f2f2f2;
   font-weight: bold;
 }
 
 .products-table tr:nth-child(even) {
-  background-color: #f2f2f2;
+  background-color: #f9f9f9;
 }
 
 .products-table tr:hover {
-  background-color: #f1c40f33;
+  background-color: #e0f7fa;
   cursor: pointer;
 }
 
-/* فرم افزودن محصول */
-.add-product-form {
-  background: white;
-  padding: 20px;
-  margin-bottom: 30px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.05);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-}
-
-.add-product-form input,
-.add-product-form select,
-.add-product-form textarea {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  flex: 1 1 200px;
-  min-width: 120px;
-}
-
-.add-product-form button {
-  background-color: #2c3e50;
-  color: white;
-  padding: 10px 20px;
+/* دکمه‌های ویرایش و حذف */
+.products-table button {
+  margin: 0 3px;
+  padding: 5px 10px;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: 0.2s;
+  font-size: 12px;
 }
 
-.add-product-form button:hover {
-  background-color: #34495e;
+.products-table button:first-child {
+  background-color: #ffc107;
+  color: white;
+}
+
+.products-table button:first-child:hover {
+  background-color: #ffb300;
+}
+
+.products-table button:last-child {
+  background-color: #f44336;
+  color: white;
+}
+
+.products-table button:last-child:hover {
+  background-color: #d32f2f;
 }
