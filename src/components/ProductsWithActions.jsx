@@ -11,149 +11,164 @@ function ProductForm({ product, onCancel, onSave }) {
     Description: product?.Description || "",
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave(formData);
-  };
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleSubmit = (e) => { e.preventDefault(); onSave(formData); };
 
   return (
-    <div className="product-form-container">
-      <form className="product-form" onSubmit={handleSubmit}>
-        <input name="ProductName" placeholder="نام محصول" value={formData.ProductName} onChange={handleChange} required />
-        <input type="number" name="Price" placeholder="قیمت" value={formData.Price} onChange={handleChange} required />
-        <input type="number" name="Stock" placeholder="موجودی" value={formData.Stock} onChange={handleChange} required />
-        <input type="number" name="WarehouseId" placeholder="انبار" value={formData.WarehouseId} onChange={handleChange} required />
-        <input type="number" name="CategoryId" placeholder="دسته‌بندی" value={formData.CategoryId} onChange={handleChange} />
-        <textarea name="Description" placeholder="توضیحات" value={formData.Description} onChange={handleChange} />
-        <div className="form-buttons">
-          <button type="submit">ذخیره</button>
-          <button type="button" onClick={onCancel}>انصراف</button>
+    <form className="product-form" onSubmit={handleSubmit}>
+      <input name="ProductName" value={formData.ProductName} onChange={handleChange} placeholder="نام محصول" required />
+      <input name="Price" value={formData.Price} onChange={handleChange} placeholder="قیمت" type="number" required />
+      <input name="Stock" value={formData.Stock} onChange={handleChange} placeholder="موجودی" type="number" required />
+      <input name="WarehouseId" value={formData.WarehouseId} onChange={handleChange} placeholder="انبار" />
+      <input name="CategoryId" value={formData.CategoryId} onChange={handleChange} placeholder="دسته‌بندی" />
+      <input name="Description" value={formData.Description} onChange={handleChange} placeholder="توضیحات" />
+
+      <div className="form-actions">
+        <button type="submit" className="btn-submit">ذخیره</button>
+        <button type="button" className="btn-cancel" onClick={onCancel}>انصراف</button>
+      </div>
+    </form>
+  );
+}
+
+function ConfirmDialog({ open, title, message, onConfirm, onCancel, confirmText = "بله، حذف کن", cancelText = "انصراف" }) {
+  if (!open) return null;
+  return (
+    <div className="modal-backdrop" role="dialog" aria-modal="true">
+      <div className="modal">
+        <h3>{title}</h3>
+        <p>{message}</p>
+        <div className="modal-actions">
+          <button className="btn-outline" onClick={onCancel}>{cancelText}</button>
+          <button className="btn-danger" onClick={onConfirm}>{confirmText}</button>
         </div>
-      </form>
+      </div>
     </div>
   );
 }
 
 export default function ProductsWithActions() {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [notification, setNotification] = useState(null);
+  const [confirm, setConfirm] = useState({ open: false, id: null, name: "" });
+
+  const notify = (msg, type = "success") => {
+    setNotification({ msg, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
 
   const fetchProducts = async () => {
     try {
       const res = await fetch("http://localhost:5000/api/products");
-      if (!res.ok) throw new Error("خطا در دریافت محصولات");
+      if (!res.ok) throw new Error();
       const data = await res.json();
       setProducts(data);
-    } catch (err) {
-      console.error(err);
-      alert(err.message);
-    } finally {
-      setLoading(false);
+    } catch {
+      notify("خطا در دریافت محصولات", "error");
     }
   };
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const handleDelete = async (id) => {
-    if (!window.confirm("آیا مطمئن هستید می‌خواهید حذف کنید؟")) return;
-    try {
-      const res = await fetch(`http://localhost:5000/api/products/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("خطا در حذف محصول");
-      setProducts((prev) => prev.filter((p) => p.Id !== id));
-    } catch (err) {
-      console.error(err);
-      alert(err.message);
-    }
-  };
+  useEffect(() => { fetchProducts(); }, []);
 
   const handleSave = async (formData) => {
     try {
       if (editingProduct) {
-        const res = await fetch(`http://localhost:5000/api/products/${editingProduct.Id}`, {
+        await fetch(`http://localhost:5000/api/products/${editingProduct.Id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
-        if (!res.ok) throw new Error("خطا در ویرایش محصول");
-        setProducts((prev) =>
-          prev.map((p) => (p.Id === editingProduct.Id ? { ...p, ...formData } : p))
-        );
+        notify("محصول ویرایش شد");
       } else {
-        const res = await fetch("http://localhost:5000/api/products", {
+        await fetch("http://localhost:5000/api/products", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
-        if (!res.ok) throw new Error("خطا در افزودن محصول");
-        const newProduct = await res.json();
-        setProducts((prev) => [...prev, newProduct]);
+        notify("محصول افزوده شد");
       }
-      setShowForm(false);
       setEditingProduct(null);
-    } catch (err) {
-      console.error(err);
-      alert(err.message);
+      setShowForm(false);
+      fetchProducts();
+    } catch {
+      notify("خطا در ذخیره محصول", "error");
     }
   };
 
-  const handleEditClick = (product) => {
-    setEditingProduct(product);
-    setShowForm(true);
+  const requestDelete = (p) => setConfirm({ open: true, id: p.Id, name: p.ProductName });
+
+  const handleConfirmDelete = async () => {
+    const id = confirm.id;
+    try {
+      await fetch(`http://localhost:5000/api/products/${id}`, { method: "DELETE" });
+      setProducts((prev) => prev.filter((x) => x.Id !== id));
+      notify("محصول حذف شد");
+    } catch {
+      notify("خطا در حذف محصول", "error");
+    } finally {
+      setConfirm({ open: false, id: null, name: "" });
+    }
   };
 
   return (
-    <div className="products-page">
-      <h2>محصولات</h2>
-      <button className="add-btn" onClick={() => { setEditingProduct(null); setShowForm(!showForm); }}>
-        {showForm ? "بستن فرم" : "افزودن محصول"}
-      </button>
+    <div className="products-container">
+      <h2>مدیریت محصولات</h2>
 
-      {showForm && <ProductForm product={editingProduct} onCancel={() => setShowForm(false)} onSave={handleSave} />}
-
-      {loading ? (
-        <p>در حال بارگذاری محصولات...</p>
-      ) : (
-        <table className="products-table">
-          <thead>
-            <tr>
-              <th>Id</th>
-              <th>نام محصول</th>
-              <th>قیمت</th>
-              <th>موجودی</th>
-              <th>انبار</th>
-              <th>دسته‌بندی</th>
-              <th>توضیحات</th>
-              <th>عملیات</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((p) => (
-              <tr key={p.Id}>
-                <td>{p.Id}</td>
-                <td>{p.ProductName}</td>
-                <td>{p.Price.toLocaleString()}</td>
-                <td>{p.Stock}</td>
-                <td>{p.WarehouseId}</td>
-                <td>{p.CategoryId || "-"}</td>
-                <td>{p.Description || "-"}</td>
-                <td>
-                  <button className="edit-btn" onClick={() => handleEditClick(p)}>ویرایش</button>
-                  <button className="delete-btn" onClick={() => handleDelete(p.Id)}>حذف</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {!showForm && !editingProduct && (
+        <button className="btn-submit" onClick={() => setShowForm(true)}>
+          + افزودن محصول جدید
+        </button>
       )}
+
+      {(showForm || editingProduct) && (
+        <ProductForm
+          product={editingProduct}
+          onSave={handleSave}
+          onCancel={() => { setShowForm(false); setEditingProduct(null); }}
+        />
+      )}
+
+      <table className="products-table">
+        <thead>
+          <tr>
+            <th>نام محصول</th>
+            <th>قیمت</th>
+            <th>موجودی</th>
+            <th>انبار</th>
+            <th>دسته‌بندی</th>
+            <th>توضیحات</th>
+            <th>عملیات</th>
+          </tr>
+        </thead>
+        <tbody>
+          {products.map((p) => (
+            <tr key={p.Id}>
+              <td>{p.ProductName}</td>
+              <td>{p.Price}</td>
+              <td>{p.Stock}</td>
+              <td>{p.WarehouseId}</td>
+              <td>{p.CategoryId}</td>
+              <td>{p.Description}</td>
+              <td>
+                <button className="btn-edit" onClick={() => setEditingProduct(p)}>ویرایش</button>
+                <button className="btn-delete" onClick={() => requestDelete(p)}>حذف</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {notification && <div className={`notification ${notification.type}`}>{notification.msg}</div>}
+
+      <ConfirmDialog
+        open={confirm.open}
+        title="حذف محصول"
+        message={`آیا از حذف «${confirm.name}» مطمئن هستید؟ این عملیات قابل بازگشت نیست.`}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setConfirm({ open: false, id: null, name: "" })}
+      />
     </div>
   );
 }

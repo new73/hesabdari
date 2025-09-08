@@ -1,60 +1,67 @@
-import React, { useEffect, useState } from "react";
-import "./styles/Products.css";
-import AddProduct from "./AddProduct";
+import React, { useState } from "react";
+import "./styles/ProductForm.css";
 
-export default function Products() {
-  const [products, setProducts] = useState([]);
+export default function ProductForm({ product, onCancel, onSave }) {
+  const [formData, setFormData] = useState({
+    ProductName: product?.ProductName || "",
+    Price: product?.Price || 0,
+    Stock: product?.Stock || 0,
+    WarehouseId: product?.WarehouseId || "",
+    CategoryId: product?.CategoryId || "",
+    Description: product?.Description || ""
+  });
 
-  const fetchProducts = async () => {
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      const res = await fetch("http://localhost:5000/api/products");
+      const method = product ? "PUT" : "POST";
+      const url = product
+        ? `http://localhost:5000/api/products/${product.Id}`
+        : "http://localhost:5000/api/products";
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
+      if (!res.ok) throw new Error("خطا در ذخیره محصول");
       const data = await res.json();
-      setProducts(data);
+      onSave({ ...formData, Id: product?.Id || data.Id });
     } catch (err) {
-      console.error("Error fetching products:", err);
+      console.error(err);
+      alert(err.message);
     }
   };
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const handleProductAdded = (newProduct) => {
-    setProducts((prev) => [...prev, newProduct]);
-  };
-
   return (
-    <div className="products-page">
-      <h2>محصولات</h2>
+    <div className="product-form-overlay">
+      <form className="product-form" onSubmit={handleSubmit}>
+        <h3>{product ? "ویرایش محصول" : "افزودن محصول جدید"}</h3>
+        <label>نام محصول</label>
+        <input name="ProductName" value={formData.ProductName} onChange={handleChange} required />
 
-      <AddProduct onProductAdded={handleProductAdded} />
+        <label>قیمت</label>
+        <input name="Price" type="number" value={formData.Price} onChange={handleChange} required />
 
-      <table className="products-table">
-        <thead>
-          <tr>
-            <th>شناسه</th>
-            <th>نام محصول</th>
-            <th>قیمت</th>
-            <th>موجودی</th>
-            <th>انبار</th>
-            <th>دسته‌بندی</th>
-            <th>توضیحات</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((p) => (
-            <tr key={p.Id}>
-              <td>{p.Id}</td>
-              <td>{p.ProductName}</td>
-              <td>{p.Price}</td>
-              <td>{p.Stock}</td>
-              <td>{p.WarehouseId}</td>
-              <td>{p.CategoryId || "-"}</td>
-              <td>{p.Description || "-"}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        <label>موجودی</label>
+        <input name="Stock" type="number" value={formData.Stock} onChange={handleChange} required />
+
+        <label>انبار</label>
+        <input name="WarehouseId" value={formData.WarehouseId} onChange={handleChange} required />
+
+        <label>دسته‌بندی</label>
+        <input name="CategoryId" value={formData.CategoryId} onChange={handleChange} />
+
+        <label>توضیحات</label>
+        <input name="Description" value={formData.Description} onChange={handleChange} />
+
+        <div style={{ textAlign: "center", marginTop: "15px" }}>
+          <button type="submit">ذخیره</button>
+          <button type="button" onClick={onCancel}>انصراف</button>
+        </div>
+      </form>
     </div>
   );
 }
