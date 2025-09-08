@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/Customers.css';
+import './styles/Customers.css';
 
 export default function Customers() {
   const customers = [

@@ -1,66 +1,38 @@
-import React, { useEffect, useState } from "react";
-import "./styles/Products.css";
+import express from "express";
+import { getConnection } from "../db.js";
 
-export default function Products() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const router = express.Router();
 
-  useEffect(() => {
-    fetch("http://localhost:5000/api/products")
-      .then((res) => {
-        if (!res.ok) throw new Error("Server error while fetching products");
-        return res.json();
-      })
-      .then((data) => {
-        setProducts(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
+router.get("/", async (req, res) => {
+  try {
+    const pool = await getConnection();
+    const result = await pool.request().query("SELECT * FROM Products");
+    res.json(result.recordset);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
-  if (loading) return <p>در حال بارگذاری محصولات...</p>;
-  if (error) return <p>❌ خطا: {error}</p>;
+router.post("/", async (req, res) => {
+  const { ProductName, Price, Stock, WarehouseId, CategoryId, Description } = req.body;
+  try {
+    const pool = await getConnection();
+    const result = await pool.request()
+      .input("ProductName", ProductName)
+      .input("Price", Price)
+      .input("Stock", Stock)
+      .input("WarehouseId", WarehouseId)
+      .input("CategoryId", CategoryId)
+      .input("Description", Description)
+      .query(`INSERT INTO Products (ProductName, Price, Stock, WarehouseId, CategoryId, Description)
+              VALUES (@ProductName, @Price, @Stock, @WarehouseId, @CategoryId, @Description);
+              SELECT SCOPE_IDENTITY() AS Id;`);
+    res.json({ Id: result.recordset[0].Id, ProductName, Price, Stock, WarehouseId, CategoryId, Description });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "خطا در افزودن محصول" });
+  }
+});
 
-  return (
-    <div className="products-container">
-      <h2>لیست محصولات</h2>
-      <div className="table-wrapper">
-        <table className="products-table">
-          <thead>
-            <tr>
-              <th>شناسه</th>
-              <th>نام محصول</th>
-              <th>قیمت</th>
-              <th>موجودی</th>
-              <th>انبار</th>
-              <th>دسته‌بندی</th>
-              <th>توضیحات</th>
-              <th>ایجاد شده</th>
-              <th>به‌روزرسانی</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((p) => (
-              <tr key={p.Id}>
-                <td>{p.Id}</td>
-                <td>{p.ProductName}</td>
-                <td>{p.Price.toLocaleString()} تومان</td>
-                <td>{p.Stock}</td>
-                <td>{p.WarehouseId}</td>
-                <td>{p.CategoryId || "-"}</td>
-                <td>{p.Description || "-"}</td>
-                <td>{p.CreatedAt ? new Date(p.CreatedAt).toLocaleString() : "-"}</td>
-                <td>{p.UpdatedAt ? new Date(p.UpdatedAt).toLocaleString() : "-"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
+export default router;

@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/Invoices.css';
+import "./styles/Invoices.css";
 
 export default function Invoices() {
   const invoices = [
