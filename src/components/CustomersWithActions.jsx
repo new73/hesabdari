@@ -1,6 +1,5 @@
-// src/components/CustomersWithActions.jsx
 import React, { useEffect, useState } from "react";
-import "./styles/Products.css"; // استایل مشابه محصولات
+import "./styles/Products.css"; // همون استایل محصولات
 
 function CustomerForm({ customer, onCancel, onSave }) {
   const [formData, setFormData] = useState({
@@ -8,8 +7,8 @@ function CustomerForm({ customer, onCancel, onSave }) {
     Email: customer?.Email || "",
     Phone: customer?.Phone || "",
     GroupId: customer?.GroupId || "",
-    CreditRial: customer?.CreditRial || "",
-    CreditLetter: customer?.CreditLetter || "",
+    CreditRial: customer?.CreditRial || 0,
+    CreditLetter: customer?.CreditLetter || 0,
     Address: customer?.Address || "",
     City: customer?.City || "",
     PostalCode: customer?.PostalCode || "",
@@ -24,24 +23,97 @@ function CustomerForm({ customer, onCancel, onSave }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!formData.FullName || !formData.GroupId) {
+      alert("نام و گروه مشتری الزامی است");
+      return;
+    }
     onSave(formData);
   };
 
   return (
     <form className="product-form" onSubmit={handleSubmit}>
-      <input name="FullName" value={formData.FullName} onChange={handleChange} placeholder="نام کامل" required />
-      <input name="Email" value={formData.Email} onChange={handleChange} placeholder="ایمیل" />
-      <input name="Phone" value={formData.Phone} onChange={handleChange} placeholder="تلفن" />
-      <input name="GroupId" value={formData.GroupId} onChange={handleChange} placeholder="گروه" />
-      <input name="CreditRial" value={formData.CreditRial} onChange={handleChange} placeholder="اعتبار ریالی" type="number" />
-      <input name="CreditLetter" value={formData.CreditLetter} onChange={handleChange} placeholder="اعتبار نامه‌ای" type="number" />
-      <input name="Address" value={formData.Address} onChange={handleChange} placeholder="آدرس" />
-      <input name="City" value={formData.City} onChange={handleChange} placeholder="شهر" />
-      <input name="PostalCode" value={formData.PostalCode} onChange={handleChange} placeholder="کد پستی" />
-      <input name="NationalCode" value={formData.NationalCode} onChange={handleChange} placeholder="کد ملی" />
-      <input name="TaxCode" value={formData.TaxCode} onChange={handleChange} placeholder="کد مالیاتی" />
-      <input name="Mobile" value={formData.Mobile} onChange={handleChange} placeholder="موبایل" />
-      <input name="Description" value={formData.Description} onChange={handleChange} placeholder="توضیحات" />
+      <input
+        name="FullName"
+        value={formData.FullName}
+        onChange={handleChange}
+        placeholder="نام کامل"
+        required
+      />
+      <input
+        name="Email"
+        value={formData.Email}
+        onChange={handleChange}
+        placeholder="ایمیل"
+      />
+      <input
+        name="Phone"
+        value={formData.Phone}
+        onChange={handleChange}
+        placeholder="تلفن"
+      />
+      <input
+        name="GroupId"
+        value={formData.GroupId}
+        onChange={handleChange}
+        placeholder="گروه"
+        required
+      />
+      <input
+        name="CreditRial"
+        value={formData.CreditRial}
+        onChange={handleChange}
+        placeholder="اعتبار ریالی"
+        type="number"
+      />
+      <input
+        name="CreditLetter"
+        value={formData.CreditLetter}
+        onChange={handleChange}
+        placeholder="اعتبار حروفی"
+        type="number"
+      />
+      <input
+        name="Address"
+        value={formData.Address}
+        onChange={handleChange}
+        placeholder="آدرس"
+      />
+      <input
+        name="City"
+        value={formData.City}
+        onChange={handleChange}
+        placeholder="شهر"
+      />
+      <input
+        name="PostalCode"
+        value={formData.PostalCode}
+        onChange={handleChange}
+        placeholder="کد پستی"
+      />
+      <input
+        name="NationalCode"
+        value={formData.NationalCode}
+        onChange={handleChange}
+        placeholder="کد ملی"
+      />
+      <input
+        name="TaxCode"
+        value={formData.TaxCode}
+        onChange={handleChange}
+        placeholder="کد مالیاتی"
+      />
+      <input
+        name="Mobile"
+        value={formData.Mobile}
+        onChange={handleChange}
+        placeholder="موبایل"
+      />
+      <input
+        name="Description"
+        value={formData.Description}
+        onChange={handleChange}
+        placeholder="توضیحات"
+      />
 
       <div className="form-actions">
         <button type="submit" className="btn-submit">ذخیره</button>
@@ -153,12 +225,13 @@ export default function CustomersWithActions() {
       <table className="products-table">
         <thead>
           <tr>
+            <th>کد مشتری</th>
             <th>نام کامل</th>
             <th>ایمیل</th>
             <th>تلفن</th>
             <th>گروه</th>
             <th>اعتبار ریالی</th>
-            <th>اعتبار نامه‌ای</th>
+            <th>اعتبار حروفی</th>
             <th>آدرس</th>
             <th>شهر</th>
             <th>کد پستی</th>
@@ -172,6 +245,7 @@ export default function CustomersWithActions() {
         <tbody>
           {customers.map((c) => (
             <tr key={c.Id}>
+              <td>{c.Id}</td>
               <td>{c.FullName}</td>
               <td>{c.Email}</td>
               <td>{c.Phone}</td>
