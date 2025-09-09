@@ -1,10 +1,10 @@
-// src/App.jsx
 import React, { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./components/Dashboard";
 // import Products معمولی رو حذف یا نذار
 import ProductsWithActions from "./components/ProductsWithActions";
-import Customers from "./components/Customers";
+import CustomersWithActions from "./components/CustomersWithActions";
+ // ← حالا این Customers همان CustomersWithActions هست
 import Invoices from "./components/Invoices";
 
 export default function App() {
@@ -19,7 +19,7 @@ export default function App() {
       <div className="main-content" style={{ flex: 1, padding: "20px" }}>
         {activePage === "dashboard" && <Dashboard />}
         {activePage === "products" && <ProductsWithActions />}
-        {activePage === "customers" && <Customers />}
+        {activePage === "customers" && <CustomersWithActions />}
         {activePage === "invoices" && <Invoices />}
       </div>
     </div>

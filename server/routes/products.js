@@ -1,20 +1,12 @@
 import express from "express";
-import sql from "mssql";
+import { getConnection } from "../db.js";
 
 const router = express.Router();
-
-const config = {
-  user: "sa",
-  password: "Qaz@Zaq_123",
-  server: "localhost",
-  database: "SmartAccounting",
-  options: { trustServerCertificate: true },
-};
 
 // GET all products
 router.get("/", async (req, res) => {
   try {
-    const pool = await sql.connect(config);
+    const pool = await getConnection();
     const result = await pool.request().query("SELECT * FROM Products");
     res.json(result.recordset);
   } catch (err) {
@@ -27,7 +19,7 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   const { ProductName, Price, Stock, WarehouseId, CategoryId, Description } = req.body;
   try {
-    const pool = await sql.connect(config);
+    const pool = await getConnection();
     const result = await pool.request()
       .input("ProductName", ProductName)
       .input("Price", Price)
@@ -36,8 +28,8 @@ router.post("/", async (req, res) => {
       .input("CategoryId", CategoryId)
       .input("Description", Description)
       .query(`
-        INSERT INTO Products (ProductName, Price, Stock, WarehouseId, CategoryId, Description)
-        VALUES (@ProductName, @Price, @Stock, @WarehouseId, @CategoryId, @Description);
+        INSERT INTO Products (ProductName, Price, Stock, WarehouseId, CategoryId, Description, CreatedAt, UpdatedAt)
+        VALUES (@ProductName, @Price, @Stock, @WarehouseId, @CategoryId, @Description, GETDATE(), GETDATE());
         SELECT SCOPE_IDENTITY() AS Id;
       `);
     res.json({ Id: result.recordset[0].Id, ProductName, Price, Stock, WarehouseId, CategoryId, Description });
@@ -52,7 +44,7 @@ router.put("/:id", async (req, res) => {
   const { id } = req.params;
   const { ProductName, Price, Stock, WarehouseId, CategoryId, Description } = req.body;
   try {
-    const pool = await sql.connect(config);
+    const pool = await getConnection();
     await pool.request()
       .input("Id", id)
       .input("ProductName", ProductName)
@@ -64,10 +56,11 @@ router.put("/:id", async (req, res) => {
       .query(`
         UPDATE Products
         SET ProductName=@ProductName, Price=@Price, Stock=@Stock,
-            WarehouseId=@WarehouseId, CategoryId=@CategoryId, Description=@Description
+            WarehouseId=@WarehouseId, CategoryId=@CategoryId, Description=@Description,
+            UpdatedAt=GETDATE()
         WHERE Id=@Id
       `);
-    res.json({ message: "محصول ویرایش شد" });
+    res.json({ message: "محصول با موفقیت ویرایش شد" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "خطا در ویرایش محصول" });
@@ -78,9 +71,9 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const pool = await sql.connect(config);
+    const pool = await getConnection();
     await pool.request().input("Id", id).query("DELETE FROM Products WHERE Id=@Id");
-    res.json({ message: "محصول حذف شد" });
+    res.json({ message: "محصول با موفقیت حذف شد" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "خطا در حذف محصول" });
