@@ -1,5 +1,5 @@
 /* ==================================================
-   Styles.css - نسخه نهایی مدرن و یکدست
+   Styles.css - نسخه نهایی مدرن، شیک و یکپارچه
 ================================================== */
 
 /* --- فونت و راست‌چین --- */
@@ -38,6 +38,18 @@ body, html, #root {
 @keyframes fadein {
   0% { opacity: 0; transform: translateY(-20px); }
   100% { opacity: 1; transform: translateY(0); }
+}
+
+/* --- لینک‌ها داخل اپلیکیشن --- */
+.app-container a {
+  text-decoration: none;
+  color: #fdfbfd;
+  margin-right: 10px;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+.app-container a:hover {
+  color: #732d91;
 }
 
 /* --- سایدبار --- */
@@ -233,6 +245,7 @@ table button.btn-delete:hover { transform: translateY(-2px); }
 .app-container {
   display: flex;
   min-height: 100vh;
+ 
 }
 .app-container main {
   flex: 1;

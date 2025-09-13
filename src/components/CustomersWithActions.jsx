@@ -1,11 +1,11 @@
 // src/components/CustomersWithActions.jsx
 import React, { useEffect, useState } from "react";
 import "./styles/Styles.css";
-
-
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
+
+const { ipcRenderer } = window;
 
 // تبدیل تاریخ میلادی به شمسی
 const toPersianDate = (dateStr) => {
@@ -180,29 +180,44 @@ export default function CustomersWithActions() {
     XLSX.writeFile(workbook, "customers.xlsx");
   };
 
-  // خروجی PDF
-  const exportToPDF = () => {
+  // خروجی PDF با نسخه جدید
+  const exportToPDF = async () => {
     if (!customers.length) return;
+
+    const { filePath, canceled } = await ipcRenderer.invoke("show-save-dialog", {
+      title: "ذخیره PDF مشتریان",
+      defaultPath: "customers.pdf",
+      filters: [{ name: "PDF", extensions: ["pdf"] }],
+    });
+
+    if (canceled || !filePath) return;
+
     const doc = new jsPDF("l", "mm", "a4");
-    doc.setFont("Tahoma");
     doc.text("گزارش مشتریان", 14, 15);
 
     const columns = [
-      "کد مشتری","نام کامل","ایمیل","تلفن","گروه","اعتبار ریالی","اعتبار حروفی","آدرس","شهر","کد پستی","کد ملی","کد مالیاتی","موبایل","توضیحات","تاریخ ثبت","تاریخ به‌روزرسانی"
+      "کد مشتری","نام کامل","ایمیل","تلفن","گروه","اعتبار ریالی","اعتبار حروفی",
+      "آدرس","شهر","کد پستی","کد ملی","کد مالیاتی","موبایل","توضیحات","تاریخ ثبت","تاریخ به‌روزرسانی"
     ];
+
     const rows = customers.map(c => [
-      c.Id, c.FullName, c.Email, c.Phone, c.GroupId, c.CreditRial, c.CreditLetter, c.Address, c.City, c.PostalCode, c.NationalCode, c.TaxCode, c.Mobile, c.Description, toPersianDate(c.CreatedAt), toPersianDate(c.UpdatedAt)
+      c.Id, c.FullName, c.Email, c.Phone, c.GroupId, c.CreditRial, c.CreditLetter,
+      c.Address, c.City, c.PostalCode, c.NationalCode, c.TaxCode, c.Mobile, c.Description,
+      toPersianDate(c.CreatedAt), toPersianDate(c.UpdatedAt)
     ]);
 
-    doc.autoTable({
+    autoTable(doc, {
       head: [columns],
       body: rows,
       startY: 20,
-      styles: { fontSize: 8, cellWidth: "wrap" },
-      headStyles: { fillColor: [41, 128, 185] },
+      styles: { fontSize: 8, cellWidth: "wrap" }
     });
 
-    doc.save("customers.pdf");
+    const pdfBuffer = doc.output("arraybuffer");
+    const result = await ipcRenderer.invoke("save-pdf-file", { filePath, data: pdfBuffer });
+
+    if (result.success) alert("PDF با موفقیت ذخیره شد!");
+    else alert("خطا در ذخیره PDF: " + result.error);
   };
 
   return (
@@ -242,7 +257,7 @@ export default function CustomersWithActions() {
               <td>{c.NationalCode}</td><td>{c.TaxCode}</td><td>{c.Mobile}</td><td>{c.Description}</td>
               <td>{toPersianDate(c.CreatedAt)}</td><td>{toPersianDate(c.UpdatedAt)}</td>
               <td>
-                <button className="btn-edit" style={{ whiteSpace: "nowrap" }} onClick={() => setEditingCustomer(c)}>ویرایش</button>
+                <button className="btn-edit" onClick={() => setEditingCustomer(c)}>ویرایش</button>
                 <button className="btn-delete" onClick={() => requestDelete(c)}>حذف</button>
               </td>
             </tr>
