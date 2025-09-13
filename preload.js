@@ -1,5 +1,6 @@
-import { contextBridge, ipcRenderer } from 'electron';
+// preload.js (CommonJS)
+const { contextBridge, ipcRenderer } = require("electron");
 
-contextBridge.exposeInMainWorld('api', {
-  getProducts: () => ipcRenderer.invoke('get-products')
+contextBridge.exposeInMainWorld("electronAPI", {
+  savePDF: (fileName, arrayBuffer) => ipcRenderer.invoke("save-pdf", { fileName, arrayBuffer })
 });

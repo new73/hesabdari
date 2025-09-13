@@ -1,0 +1,36 @@
+Folder PATH listing
+Volume serial number is C482-A4CC
+E:.
+|   App.jsx
+|   index.css
+|   main.jsx
+|   structure.txt
+|   
++---assets
+|       react.svg
+|       
++---components
+|   |   AddProduct.jsx
+|   |   CustomersWithActions.jsx
+|   |   Dashboard.jsx
+|   |   Header.jsx
+|   |   Invoices.jsx
+|   |   Notification.jsx
+|   |   ProductForm.jsx
+|   |   Products.jsx
+|   |   ProductsWithActions.jsx
+|   |   Sidebar.jsx
+|   |   
+|   \---styles
+|           App.css
+|           ConfirmDialog.css
+|           Dashboard.css
+|           ProductForm.css
+|           Styles.css
+|           
++---dal
+|       db.js
+|       
+\---pages
+        Products.jsx
+        

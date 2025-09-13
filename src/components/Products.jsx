@@ -1,6 +1,7 @@
 // src/components/Products.jsx
 import React, { useEffect, useState } from "react";
-import "./styles/Products.css";
+import "./components/styles/Styles.css";
+
 
 export default function Products() {
   const [products, setProducts] = useState([]);

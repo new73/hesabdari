@@ -1,5 +1,8 @@
+// src/components/ProductsWithActions.jsx
 import React, { useEffect, useState } from "react";
-import "./styles/ProductsWithActions.css";
+import "./styles/Styles.css";
+
+
 
 function ProductForm({ product, onCancel, onSave }) {
   const [formData, setFormData] = useState({
@@ -11,8 +14,13 @@ function ProductForm({ product, onCancel, onSave }) {
     Description: product?.Description || "",
   });
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
-  const handleSubmit = (e) => { e.preventDefault(); onSave(formData); };
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave(formData);
+  };
 
   return (
     <form className="product-form" onSubmit={handleSubmit}>
@@ -31,7 +39,7 @@ function ProductForm({ product, onCancel, onSave }) {
   );
 }
 
-function ConfirmDialog({ open, title, message, onConfirm, onCancel, confirmText = "بله، حذف کن", cancelText = "انصراف" }) {
+function ConfirmDialog({ open, title, message, onConfirm, onCancel }) {
   if (!open) return null;
   return (
     <div className="modal-backdrop" role="dialog" aria-modal="true">
@@ -39,8 +47,8 @@ function ConfirmDialog({ open, title, message, onConfirm, onCancel, confirmText 
         <h3>{title}</h3>
         <p>{message}</p>
         <div className="modal-actions">
-          <button className="btn-outline" onClick={onCancel}>{cancelText}</button>
-          <button className="btn-danger" onClick={onConfirm}>{confirmText}</button>
+          <button className="btn-outline" onClick={onCancel}>انصراف</button>
+          <button className="btn-danger" onClick={onConfirm}>بله، حذف کن</button>
         </div>
       </div>
     </div>
@@ -152,7 +160,7 @@ export default function ProductsWithActions() {
               <td>{p.CategoryId}</td>
               <td>{p.Description}</td>
               <td>
-                <button className="btn-edit" onClick={() => setEditingProduct(p)}>ویرایش</button>
+                <button className="btn-edit" style={{ whiteSpace: "nowrap" }} onClick={() => setEditingProduct(p)}>ویرایش</button>
                 <button className="btn-delete" onClick={() => requestDelete(p)}>حذف</button>
               </td>
             </tr>

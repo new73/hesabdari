@@ -1,10 +1,13 @@
+// src/components/CustomersWithActions.jsx
 import React, { useEffect, useState } from "react";
-import "./styles/Customers.css";
+import "./styles/Styles.css";
+
+
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 
-// تابع کمکی تبدیل تاریخ میلادی به شمسی
+// تبدیل تاریخ میلادی به شمسی
 const toPersianDate = (dateStr) => {
   if (!dateStr) return "";
   const date = new Date(dateStr);
@@ -149,7 +152,7 @@ export default function CustomersWithActions() {
     }
   };
 
-  // خروجی اکسل با نام ستون‌ها فارسی و تاریخ شمسی
+  // خروجی اکسل
   const exportToExcel = () => {
     if (!customers.length) return;
     const worksheet = XLSX.utils.json_to_sheet(
@@ -177,7 +180,7 @@ export default function CustomersWithActions() {
     XLSX.writeFile(workbook, "customers.xlsx");
   };
 
-  // خروجی PDF / چاپ با تاریخ شمسی
+  // خروجی PDF
   const exportToPDF = () => {
     if (!customers.length) return;
     const doc = new jsPDF("l", "mm", "a4");
@@ -239,7 +242,7 @@ export default function CustomersWithActions() {
               <td>{c.NationalCode}</td><td>{c.TaxCode}</td><td>{c.Mobile}</td><td>{c.Description}</td>
               <td>{toPersianDate(c.CreatedAt)}</td><td>{toPersianDate(c.UpdatedAt)}</td>
               <td>
-                <button className="btn-edit" onClick={() => setEditingCustomer(c)}>ویرایش</button>
+                <button className="btn-edit" style={{ whiteSpace: "nowrap" }} onClick={() => setEditingCustomer(c)}>ویرایش</button>
                 <button className="btn-delete" onClick={() => requestDelete(c)}>حذف</button>
               </td>
             </tr>

@@ -1,10 +1,13 @@
+// src/components/Dashboard.jsx
 import React from "react";
+import "./styles/Styles.css";
+
 
 export default function Dashboard() {
   return (
-    <div>
-      <h2>داشبورد اصلی</h2>
-      <p>خلاصه وضعیت موجودی، فروش و فاکتورها در این قسمت نمایش داده می‌شود.</p>
+    <div style={{ textAlign: "right" }}>
+      <h1>داشبورد</h1>
+      <p>خوش آمدید! اینجا نمای کلی سیستم است.</p>
     </div>
   );
 }

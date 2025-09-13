@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 
+
 export default function AddProduct({ onProductAdded }) {
   const [productName, setProductName] = useState("");
   const [price, setPrice] = useState("");

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./styles/ProductForm.css";
+import "./styles/Styles.css";
 
 export default function ProductForm({ product, onCancel, onSave }) {
   const [formData, setFormData] = useState({
